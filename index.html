@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>NFL-BA</title>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link href="css/style.css" rel="stylesheet" type="text/css" />
+	<style>
+		html,
+		body,
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		h6 {
+			font-family: "Titillium Web", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+		}
+
+		< !-- .cite {
+			background: #f0f0f0;
+			padding: 10px;
+			font-size: 18px
+		}
+
+		-->.cite {
+			padding: 0px;
+			background: #ffffff;
+			font-size: 18px
+		}
+
+		.card {
+			border: 1px solid #ccc
+		}
+
+		img {
+			margin-bottom: -6px;
+		}
+
+		p {
+			font-size: 18px;
+		}
+
+		a {
+			text-decoration: none;
+			color: #2196F3;
+		}
+		
+		.bibtexsection {
+			width: 100%;
+			height: 12em;
+			font-family: "Courier", monospace;
+			/* font-size: 1vw; */
+			white-space: pre;
+			background-color: #f4f4f4;
+			margin-left: auto;
+			margin-right: auto;
+			text-align: left;
+		}
+
+		.layered-paper-big {
+			/* modified from: http://css-tricks.com/snippets/css/layered-paper/ */
+			box-shadow:
+				0px 0px 1px 1px rgba(0, 0, 0, 0.35),
+				/* The top layer shadow */
+				5px 5px 0 0px #fff,
+				/* The second layer */
+				5px 5px 1px 1px rgba(0, 0, 0, 0.35),
+				/* The second layer shadow */
+				10px 10px 0 0px #fff,
+				/* The third layer */
+				10px 10px 1px 1px rgba(0, 0, 0, 0.35),
+				/* The third layer shadow */
+				15px 15px 0 0px #fff,
+				/* The fourth layer */
+				15px 15px 1px 1px rgba(0, 0, 0, 0.35),
+				/* The fourth layer shadow */
+				20px 20px 0 0px #fff,
+				/* The fifth layer */
+				20px 20px 1px 1px rgba(0, 0, 0, 0.35),
+				/* The fifth layer shadow */
+				25px 25px 0 0px #fff,
+				/* The fifth layer */
+				25px 25px 1px 1px rgba(0, 0, 0, 0.35);
+			/* The fifth layer shadow */
+			margin-left: 10px;
+			margin-right: 60px;
+		}
+
+		table {
+			text-align: center;
+			margin-left: auto;
+			margin-right: auto;
+			border-collapse: collapse;
+		}
+
+		table> :is(thead, tbody)>tr> :is(th, td) {
+			padding: 3px;
+			text-align: center;
+		}
+
+		table>thead>tr> :is(th, td) {
+			border-top: 2px solid;
+			border-bottom: 1px solid;
+		}
+
+		table>tbody>tr:last-child> :is(th, td) {
+			border-bottom: 2px solid;
+		}
+
+		table>tbody {
+			border-top: 2px solid;
+			border-bottom: 1px solid;
+		}
+	</style>
+</head>
+
+<body class="w3-white">
+	<!-- Page Container -->
+	<div class="w3-content w3-margin-top w3-margin-bottom" style="max-width:960px;">
+
+		<!-- The Grid -->
+		<div class="w3-row-padding">
+
+			<!-- paper container -->
+			<div class="w3-display-container w3-row w3-white w3-margin-bottom">
+				<div class="w3-center">
+					<h1>NFL-BA: Improving Endoscopic SLAM</h1> 
+					<h1>with Near-Field Light Bundle Adjustment</h1>
+					<h5>Andrea Dunn Beltran<sup>*</sup>, Daniel Rho<sup>*</sup>, Marc Niethammer, Roni Sengupta</h5>
+					<h5>University of North Carolina at Chapel Hill</h5>
+					<h5><sup>*</sup>Equal contribution
+				</div>
+
+				<div class="w3-center">
+					<h3>[<a href="">Paper</a>]</h3>
+				</div>
+
+				<hr>
+				<div class="w3-display-container w3-row w3-white w3-margin-bottom w3-center">
+					<img src="images/teaser.png" style="width:100%">
+
+<!-- 					<video controls style="width:100%" autoplay loop playsinline muted>
+						<source src="videos/media1.mp4" type="video/mp4">
+						Sorry, your browser doesn't support embedded videos.
+					</video> -->
+				</div>
+				
+				<hr>
+				<div class="w3-center">
+					<h2>Abstract</h2>
+				</div>
+				<p align="justify">Simultaneous Localization And Mapping (SLAM) from a monocular endoscopy video can enable autonomous navigation, guidance to unsurveyed regions, and 3D visualizations, which can significantly improve endoscopy experience for surgeons and patient outcomes. Existing dense SLAM algorithms often assume distant and static lighting and textured surfaces, and alternate between optimizing scene geometry and camera parameters by minimizing a photometric rendering loss, often called Photometric Bundle Adjustment. However, endoscopic environments exhibit dynamic near-field lighting due to the co-located light and camera moving extremely close to the surface, textureless surfaces, and strong specular reflections due to mucus layers. When not considered, these near-field lighting effects can  cause significant performance reductions for existing SLAM algorithms from indoor/outdoor scenes when applied to endoscopy videos. To mitigate this problem, we introduce a new Near-Field Lighting Bundle Adjustment Loss \(\mathcal{L}_{NFL-BA}\) that can also be alternatingly optimized, along with the Photometric Bundle Adjustment loss, such that the captured images' intensity variations match the relative distance and orientation between the surface and the co-located light and camera. We derive a general NFL-BA loss function for 3D Gaussian surface representations and demonstrate that adding \(\mathcal{L}_{NFL-BA}\) can significantly improve the tracking and mapping performance of two state-of-the-art 3DGS-SLAM systems, MonoGS (35% improvement in tracking, 48% improvement in mapping with predicted depth maps) and EndoGSLAM (22% improvement in tracking, marginal improvement in mapping with predicted depths), on the C3VD endoscopy dataset for colons.</p>
+				
+				<hr>
+				<div class="w3-center">
+					<h2>Bibtex</h2>
+				</div>
+				<textarea class="bibtexsection" readonly>
+
+				</textarea>
+
+				<hr>
+				<div class="w3-center">
+					<p class="text-justify">
+						We used the project page of <a href="https://leonidk.github.io/fuzzy-metaballs/">Fuzzy Metaballs</a> as a template</a>.
+					</p>
+				</div>
+			</div>
+			<!-- end paper container -->
+
+		</div><!-- End Grid -->
+	</div><!-- End Page Container -->
+
+</body>
+<!-- <script type="text/javascript" src="js/main.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" id="MathJax-script" async></script>
+
+<link
+	rel="stylesheet"
+	href="https://unpkg.com/img-comparison-slider@7/dist/styles.css"
+/>
+
+</html>
