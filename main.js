@@ -2,6 +2,7 @@ let gl1, gl2, gl3;
 let program1, program2, program3;
 let uni1, uni2, uni3;
 let pointCount1 = 0, pointCount2 = 0, pointCount3 = 0;
+let currentPositions = null;
 
 // Camera parameters
 let cameraYaw = 0;
@@ -42,7 +43,7 @@ function getPaths(pipeline, depthType, sequence) {
     const basePath = `point_clouds/pc/${baseDir}_base_${depthSuffix}_${sequence}_under_review_aligned_colored.ply`;
     const nflbaPath = `point_clouds/pc/${baseDir}_our_${depthSuffix}_${sequence}_under_review_aligned_colored.ply`;
 
-    const videoPath = `videos/${baseDir}/${depthSuffix}_${sequence}_traj_3.mp4`;
+    const videoPath = `videos/${baseDir}/${baseDir}_${depthSuffix}_${sequence}_traj_3.mp4`;
 
     return { gtPath, basePath, nflbaPath, videoPath };
 }
@@ -183,8 +184,9 @@ async function loadCombination() {
 
     const videoElement = document.getElementById('sequenceVideo');
     videoElement.src = videoPath;
+    videoElement.loop = true; 
     videoElement.load();
-    // videoElement.play(); // remove if autoplay causes issues, rely on user click
+    videoElement.play();
 }
 
 function loadPointCloud(url) {
@@ -399,7 +401,7 @@ function setupViewer(gl, positions, colors) {
     uniform mat4 uPMatrix;
     varying vec3 vColor;
     void main(void) {
-        gl_PointSize = 3.0;
+        gl_PointSize = 1.0;
         gl_Position = uPMatrix * uMVMatrix * vec4(aPosition, 1.0);
         vColor = aColor;
     }`;
@@ -447,6 +449,7 @@ function updateViewer(canvasId, positions, colors) {
         program1 = viewer.program;
         uni1 = { mvMatrix: viewer.uMVMatrix, pMatrix: viewer.uPMatrix };
         pointCount1 = positions.length / 3;
+        currentPositions = positions; // Save current positions globally
     } else if (canvasId === 'canvas2') {
         gl2 = gl;
         program2 = viewer.program;
@@ -506,7 +509,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const resetViewLink = document.getElementById('reset-view');
     resetViewLink.addEventListener('click', () => {
         // Reset the view using the currently loaded point cloud
-        const currentPositions = gl1 ? new Float32Array(gl1.positions) : null;
         resetView(currentPositions);
     });
 });
