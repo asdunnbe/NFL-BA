@@ -1,27 +1,3 @@
-const sequences = {
-    "cecum_t1_a": [
-        "point_clouds/gt/ascii-cecum_t1_a_under_review-500.ply",
-        "point_clouds/pc/MonoGS_base_pps_cecum_t1_a_under_review_aligned.ply",
-        "point_clouds/pc/MonoGS_our_pps_cecum_t1_a_under_review_aligned.ply"
-    ],
-    "cecum_t2_a": [
-        "point_clouds/gt/ascii-cecum_t2_a_under_review-500.ply",
-        "point_clouds/monoGS_base/ascii-base_rgbd_cecum_t2_a_under_review.ply",
-        "point_clouds/monoGS_nflba/ascii-our_rgbd_cecum_t2_a_under_review.ply"
-    ],
-    "cecum_t3_a": [
-        "point_clouds/gt/ascii-cecum_t3_a_under_review-500.ply",
-        "point_clouds/monoGS_base/ascii-base_rgbd_cecum_t3_a_under_review.ply",
-        "point_clouds/monoGS_nflba/ascii-our_rgbd_cecum_t3_a_under_review.ply"
-    ]
-};
-
-const sequencesVideos = {
-    "cecum_t1_a": "videos/cecum_t1_a_traj_3.mp4",
-    "cecum_t2_a": "videos/cecum_t2_a_traj_3.mp4",
-    "cecum_t3_a": "videos/cecum_t3_a_traj_3.mp4"
-};
-
 let gl1, gl2, gl3;
 let program1, program2, program3;
 let uni1, uni2, uni3;
@@ -45,52 +21,172 @@ let isDragging = false;
 let lastMouseX = 0;
 let lastMouseY = 0;
 
-// function loadPointCloud(url) {
-//     return fetch(url).then(response => {
-//         if (!response.ok) {
-//             throw new Error(`Failed to load point cloud file: ${response.statusText}`);
-//         }
-//         return response.text();
-//     }).then(text => {
-//         const lines = text.trim().split('\n');
-//         let vertexCount = 0;
-//         let headerEndIndex = -1;
+// Global state
+let pipeline = "MonoGS";       // default
+let depthType = "oracle_depth"; // default
+let sequence = "cecum_t1_a";     // default
 
-//         for (let i = 0; i < lines.length; i++) {
-//             const line = lines[i].toLowerCase();
-//             if (line.startsWith('element vertex')) {
-//                 const parts = line.split(/\s+/);
-//                 vertexCount = parseInt(parts[2], 10);
-//             }
-//             if (line === 'end_header') {
-//                 headerEndIndex = i;
-//                 break;
-//             }
-//         }
 
-//         if (headerEndIndex === -1 || vertexCount === 0) {
-//             console.error("Header parsing failed or no vertices specified.");
-//             return { positions: new Float32Array([]), colors: new Float32Array([]) };
-//         }
+// Adjust this object or logic according to your actual filenames and structure
+// pipeline: MonoGS or EndoGSLAM
+// depthType: no_depth -> none, oracle_depth -> oracle, ppsnet_depth -> pps
+// sequence: cecum_t1_a, etc.
+function getPaths(pipeline, depthType, sequence) {
+    const gtPath = `point_clouds/gt/ascii-${sequence}_under_review-500.ply`;
 
-//         const positions = [];
-//         const colors = [];
+    let baseDir = (pipeline === "MonoGS") ? "MonoGS" : "EndoGSLAM";
+    let depthSuffix = (depthType === "no_depth") ? "none"
+                      : (depthType === "ppsnet_depth") ? "pps"
+                      : "oracle";
 
-//         for (let i = headerEndIndex + 1; i <= headerEndIndex + vertexCount; i++) {
-//             const parts = lines[i].split(/\s+/).map(Number);
-//             if (parts.length >= 6 && !parts.some(isNaN)) {
-//                 const [x, y, z, r, g, b] = parts;
-//                 positions.push(x, y, z);
-//                 colors.push(r / 255, g / 255, b / 255);
-//             }
-//         }
+    const basePath = `point_clouds/pc/${baseDir}_base_${depthSuffix}_${sequence}_under_review_aligned_colored.ply`;
+    const nflbaPath = `point_clouds/pc/${baseDir}_our_${depthSuffix}_${sequence}_under_review_aligned_colored.ply`;
 
-//         return {
-//             positions: new Float32Array(positions),
-//             colors: new Float32Array(colors)
-//         };
-//     });
-// }
+    const videoPath = `videos/${baseDir}/${depthSuffix}_${sequence}_traj_3.mp4`;
+
+    return { gtPath, basePath, nflbaPath, videoPath };
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const pipelineBtns = document.querySelectorAll('.pipeline-btn');
+    const depthBtns = document.querySelectorAll('.depth-btn');
+    const sequenceBtns = document.querySelectorAll('.sequence-btn');
+
+    function updateButtonStyles() {
+        pipelineBtns.forEach(btn => {
+            btn.classList.toggle('selected', btn.getAttribute('data-pipeline') === pipeline);
+        });
+        depthBtns.forEach(btn => {
+            btn.classList.toggle('selected', btn.getAttribute('data-depth') === depthType);
+        });
+        sequenceBtns.forEach(btn => {
+            btn.classList.toggle('selected', btn.getAttribute('data-seq') === sequence);
+        });
+    }
+
+    function updateDepthOptions() {
+        depthBtns.forEach(btn => {
+            const depthVal = btn.getAttribute('data-depth');
+            if (pipeline === "MonoGS") {
+                btn.style.display = 'inline-block';
+            } else {
+                // EndoGSLAM: no_depth hidden
+                if (depthVal === "no_depth") {
+                    btn.style.display = 'none';
+                    if (depthType === "no_depth") {
+                        depthType = "oracle_depth";
+                    }
+                } else {
+                    btn.style.display = 'inline-block';
+                }
+            }
+        });
+    }
+
+    pipelineBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            pipeline = btn.getAttribute('data-pipeline');
+            updateDepthOptions();
+            updateButtonStyles();
+            loadCombination();
+        });
+    });
+
+    depthBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (btn.style.display !== 'none') {
+                depthType = btn.getAttribute('data-depth');
+                updateButtonStyles();
+                loadCombination();
+            }
+        });
+    });
+
+    sequenceBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            sequence = btn.getAttribute('data-seq');
+            updateButtonStyles();
+            loadCombination();
+        });
+    });
+
+    updateDepthOptions();
+    updateButtonStyles();
+    loadCombination();
+});
+
+function recenterCamera(positions) {
+    if (positions.length === 0) return;
+
+    let minX = Infinity, minY = Infinity, minZ = Infinity;
+    let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+
+    for (let i = 0; i < positions.length; i += 3) {
+        const x = positions[i], y = positions[i + 1], z = positions[i + 2];
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (z < minZ) minZ = z;
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
+        if (z > maxZ) maxZ = z;
+    }
+
+    // Compute the center of the bounding box
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+    const centerZ = (minZ + maxZ) / 2;
+
+    // Translate the camera to center the point cloud
+    cameraX = -centerX;
+    cameraY = -centerY;
+    cameraZ = -2.0; 
+
+    // Compute the size of the bounding box
+    const width = maxX - minX;
+    const height = maxY - minY;
+    const depth = maxZ - minZ;
+    const maxDim = Math.max(width, height, depth);
+
+    // Set camera Z such that the point cloud fills ~75% of the view
+    cameraZ = -(1.5 * maxDim); // Adjust scaling factor as needed
+}
+
+function resetView(positions) {
+    // Reset rotation
+    cameraYaw = 0;
+    cameraPitch = 0;
+    cameraRoll = 0;
+
+    // Recenter the camera using the loaded point cloud
+    if (positions) {
+        recenterCamera(positions);
+    }
+
+    // Optionally, re-render immediately
+    render();
+}
+
+async function loadCombination() {
+    const { gtPath, basePath, nflbaPath, videoPath } = getPaths(pipeline, depthType, sequence);
+
+    const [gtData, baseData, nflbaData] = await Promise.all([
+        loadPointCloud(gtPath),
+        loadPointCloud(basePath),
+        loadPointCloud(nflbaPath)
+    ]);
+
+    resetView(gtData.positions);
+
+    updateViewer('canvas1', gtData.positions, gtData.colors);
+    updateViewer('canvas2', baseData.positions, baseData.colors);
+    updateViewer('canvas3', nflbaData.positions, nflbaData.colors);
+
+    const videoElement = document.getElementById('sequenceVideo');
+    videoElement.src = videoPath;
+    videoElement.load();
+    // videoElement.play(); // remove if autoplay causes issues, rely on user click
+}
+
 function loadPointCloud(url) {
     return fetch(url).then(response => {
         if (!response.ok) {
@@ -126,16 +222,13 @@ function loadPointCloud(url) {
             const parts = lines[i].split(/\s+/).map(Number);
 
             if (parts.length >= 3 && !parts.slice(0,3).some(isNaN)) {
-                // We always have x, y, z
                 const x = parts[0], y = parts[1], z = parts[2];
                 positions.push(x, y, z);
 
                 if (parts.length >= 6 && !parts.slice(3,6).some(isNaN)) {
-                    // If r, g, b are provided
                     const r = parts[3], g = parts[4], b = parts[5];
                     colors.push(r / 255, g / 255, b / 255);
                 } else {
-                    // No color provided, default to black
                     colors.push(0, 0, 0);
                 }
             }
@@ -408,104 +501,26 @@ function updateViewer(canvasId, positions, colors) {
     });
 }
 
-// async function loadSequence(sequenceKey) {
-//     const [gtPath, basePath, nflbaPath] = sequences[sequenceKey];
-//     const [gtData, baseData, nflbaData] = await Promise.all([
-//         loadPointCloud(gtPath),
-//         loadPointCloud(basePath),
-//         loadPointCloud(nflbaPath)
-//     ]);
-
-//     updateViewer('canvas1', gtData.positions, gtData.colors);
-//     updateViewer('canvas2', baseData.positions, baseData.colors);
-//     updateViewer('canvas3', nflbaData.positions, nflbaData.colors);
-
-//     // Update the video source based on the sequence
-//     const videoElement = document.getElementById('sequenceVideo');
-
-//     videoElement.addEventListener('click', () => {
-//         videoElement.loop = true;
-//         videoElement.currentTime = 0;
-//         videoElement.play();
-//     });
-
-//     videoElement.src = sequencesVideos[sequenceKey];
-//     videoElement.load();
-//     videoElement.play();
-// }
-async function loadSequence(sequenceKey) {
-    const [gtPath, basePath, nflbaPath] = sequences[sequenceKey];
-    const [gtData, baseData, nflbaData] = await Promise.all([
-        loadPointCloud(gtPath),
-        loadPointCloud(basePath),
-        loadPointCloud(nflbaPath)
-    ]);
-
-    // Compute bounding box from gtData (or another set if preferred)
-    if (gtData.positions.length > 0) {
-        let minX = Infinity, minY = Infinity, minZ = Infinity;
-        let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
-
-        const pos = gtData.positions;
-        for (let i = 0; i < pos.length; i += 3) {
-            const x = pos[i], y = pos[i+1], z = pos[i+2];
-            if (x < minX) minX = x;
-            if (y < minY) minY = y;
-            if (z < minZ) minZ = z;
-            if (x > maxX) maxX = x;
-            if (y > maxY) maxY = y;
-            if (z > maxZ) maxZ = z;
-        }
-
-        // Compute the center of the bounding box
-        const centerX = (minX + maxX) / 2;
-        const centerY = (minY + maxY) / 2;
-        const centerZ = (minZ + maxZ) / 2;
-
-        // Translate the camera so that the model is centered
-        cameraX = -centerX;
-        cameraY = -centerY;
-        cameraZ = -2.0; // This was our default
-
-        // Compute the size of the bounding box
-        const width = maxX - minX;
-        const height = maxY - minY;
-        const depth = maxZ - minZ;
-        const maxDim = Math.max(width, height, depth);
-        
-        cameraZ = -(2.0 * maxDim);
-
-    }
-
-    updateViewer('canvas1', gtData.positions, gtData.colors);
-    updateViewer('canvas2', baseData.positions, baseData.colors);
-    updateViewer('canvas3', nflbaData.positions, nflbaData.colors);
-
-    // Update the video source based on the sequence
-    const videoElement = document.getElementById('sequenceVideo');
-
-    videoElement.addEventListener('click', () => {
-        videoElement.loop = true;
-        videoElement.currentTime = 0;
-        videoElement.play();
+document.addEventListener('DOMContentLoaded', () => {
+    // Add event listener for the reset view link
+    const resetViewLink = document.getElementById('reset-view');
+    resetViewLink.addEventListener('click', () => {
+        // Reset the view using the currently loaded point cloud
+        const currentPositions = gl1 ? new Float32Array(gl1.positions) : null;
+        resetView(currentPositions);
     });
+});
 
-    videoElement.src = sequencesVideos[sequenceKey];
-    videoElement.load();
-    videoElement.play();
-}
-
-// Global wheel event: decide if zoom affects camera or page scroll
+// Wheel zoom 
 window.addEventListener('wheel', (e) => {
     const mouseInViewer = mouseInCanvas1 || mouseInCanvas2 || mouseInCanvas3;
     if (mouseInViewer) {
-        // Inside viewer: prevent page scroll and adjust zoom
         e.preventDefault();
         cameraZ += e.deltaY * 0.01;
     }
 }, { passive: false });
 
-// Global keydown event: if inside viewer, control camera; else let page handle
+// Keyboard controls
 window.addEventListener("keydown", (e) => {
     const mouseInViewer = mouseInCanvas1 || mouseInCanvas2 || mouseInCanvas3;
     if (mouseInViewer) {
@@ -524,12 +539,8 @@ window.addEventListener("keydown", (e) => {
     }
 });
 
-document.getElementById('sequenceSelect').addEventListener('change', async () => {
-    const selectedSequence = document.getElementById('sequenceSelect').value;
-    await loadSequence(selectedSequence);
-});
-
 (async function init() {
-    await loadSequence('cecum_t1_a');
+    // Initial load with defaults
+    await loadCombination();
     render();
 })();

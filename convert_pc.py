@@ -1,7 +1,7 @@
 import os
 import open3d as o3d
 
-root = '/Users/asdunnbe/Documents/GitHub/NFL-BA/point_clouds/pc'
+root = '/Users/asdunnbe/Documents/GitHub/NFL-BA/point_clouds/gt'
 
 for file in os.listdir(root):
     print(file)
