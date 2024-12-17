@@ -69,6 +69,10 @@
 			width: 100px;
 		}
 
+		button.pipeline-btn{
+			width: 120px;
+		}
+
 		button.selected {
 			background: #9bc8ff; /* Lighter background for selected */
 			color: #000;
@@ -191,7 +195,7 @@
 				<hr>
 
 				<div class="w3-center">
-					<h2>Results</h2>
+					<h2>Visualizations</h2>
 				</div>
 
 				<div id="seq-container">
@@ -234,7 +238,7 @@
 						<div id="custom-table">
 							<div class="table-row">
 								<div class="table-cell"><h5>Input Video</div>
-								<div class="table-cell"><h5>SLAM Baseline</h5></div>
+								<div class="table-cell"><h5>SLAM Baseline <b>Trajectory</b></h5></div>
 								<div class="table-cell"><h5>+NFL_BA (Ours)</h5></div>
 							</div>
 						</div>
@@ -250,7 +254,7 @@
 							</div>
 						</div>
 						<div class="viewer-wrapper">
-							<h5>SLAM Baseline</h5>
+							<h5>SLAM Baseline <b>Mapping</b></h5>
 							<div class="viewer" id="viewer2">
 								<canvas id="canvas2"></canvas>
 							</div>
@@ -279,8 +283,6 @@
 				<img src="images/table.png" style="width:100%">
 				<hr>
 
-
-				<hr>
 				<div class="w3-center">
 					<h3>Acknowledgment</h3>
 				</div>

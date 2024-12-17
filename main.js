@@ -170,6 +170,12 @@ function resetView(positions) {
 async function loadCombination() {
     const { gtPath, basePath, nflbaPath, videoPath } = getPaths(pipeline, depthType, sequence);
 
+    const videoElement = document.getElementById('sequenceVideo');
+    videoElement.src = videoPath;
+    videoElement.loop = true; 
+    videoElement.load();
+    videoElement.play();
+    
     const [gtData, baseData, nflbaData] = await Promise.all([
         loadPointCloud(gtPath),
         loadPointCloud(basePath),
@@ -181,12 +187,6 @@ async function loadCombination() {
     updateViewer('canvas1', gtData.positions, gtData.colors);
     updateViewer('canvas2', baseData.positions, baseData.colors);
     updateViewer('canvas3', nflbaData.positions, nflbaData.colors);
-
-    const videoElement = document.getElementById('sequenceVideo');
-    videoElement.src = videoPath;
-    videoElement.loop = true; 
-    videoElement.load();
-    videoElement.play();
 }
 
 function loadPointCloud(url) {
