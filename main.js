@@ -173,6 +173,8 @@ async function loadCombination() {
     const videoElement = document.getElementById('sequenceVideo');
     videoElement.src = videoPath;
     videoElement.loop = true; 
+    videoElement.muted = true;
+    videoElement.autoplay = true;
     videoElement.load();
     videoElement.play();
 
@@ -205,15 +207,20 @@ function loadPointCloud(url) {
             if (line.startsWith('element vertex')) {
                 const parts = line.split(/\s+/);
                 vertexCount = parseInt(parts[2], 10);
-            }
-            if (line === 'end_header') {
-                headerEndIndex = i;
                 break;
             }
+            // if (line === 'end_header') {
+            //     headerEndIndex = i;
+            //     break;
+            // }
         }
 
-        if (headerEndIndex === -1 || vertexCount === 0) {
-            console.error("Header parsing failed or no vertices specified.");
+        // if (headerEndIndex === -1) {
+        //     console.error("Header parsing failed.");
+        //     return { positions: new Float32Array([]), colors: new Float32Array([]) };
+        // }
+        if (vertexCount === 0) {
+            console.error("No vertices specified.");
             return { positions: new Float32Array([]), colors: new Float32Array([]) };
         }
 
