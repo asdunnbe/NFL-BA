@@ -24,7 +24,7 @@ let lastMouseY = 0;
 
 // Global state
 let pipeline = "MonoGS";       // default
-let depthType = "oracle_depth"; // default
+let depthType = "ppsnet_depth"; // default
 let sequence = "cecum_t1_a";     // default
 
 
@@ -175,7 +175,7 @@ async function loadCombination() {
     videoElement.loop = true; 
     videoElement.load();
     videoElement.play();
-    
+
     const [gtData, baseData, nflbaData] = await Promise.all([
         loadPointCloud(gtPath),
         loadPointCloud(basePath),
