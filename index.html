@@ -190,13 +190,24 @@
 					<h2>Abstract</h2>
 				</div>
 				
-				<p align="justify">Simultaneous Localization And Mapping (SLAM) from a monocular endoscopy video can enable autonomous navigation, guidance to unsurveyed regions, and 3D visualizations, which can significantly improve endoscopy experience for surgeons and patient outcomes. Existing dense SLAM algorithms often assume distant and static lighting and textured surfaces, and alternate between optimizing scene geometry and camera parameters by minimizing a photometric rendering loss, often called Photometric Bundle Adjustment. However, endoscopic environments exhibit dynamic near-field lighting due to the co-located light and camera moving extremely close to the surface, textureless surfaces, and strong specular reflections due to mucus layers. When not considered, these near-field lighting effects can  cause significant performance reductions for existing SLAM algorithms from indoor/outdoor scenes when applied to endoscopy videos. To mitigate this problem, we introduce a new Near-Field Lighting Bundle Adjustment Loss \(\mathcal{L}_{NFL-BA}\) that can also be alternatingly optimized, along with the Photometric Bundle Adjustment loss, such that the captured images' intensity variations match the relative distance and orientation between the surface and the co-located light and camera. We derive a general NFL-BA loss function for 3D Gaussian surface representations and demonstrate that adding \(\mathcal{L}_{NFL-BA}\) can significantly improve the tracking and mapping performance of two state-of-the-art 3DGS-SLAM systems, MonoGS (35% improvement in tracking, 48% improvement in mapping with predicted depth maps) and EndoGSLAM (22% improvement in tracking, marginal improvement in mapping with predicted depths), on the C3VD endoscopy dataset for colons.</p>
-
+				<p align="justify">    Simultaneous Localization And Mapping (SLAM) from endoscopy videos can enable autonomous navigation, guidance to unsurveyed regions, blindspot detections, and 3D visualizations, which can significantly improve patient outcomes and endoscopy experience for both physicians and patients.
+					Existing dense SLAM algorithms often assume distant and static lighting and optimize scene geometry and camera parameters by minimizing a photometric rendering loss, often called Photometric Bundle Adjustment.
+					However, endoscopy videos exhibit dynamic near-field lighting due to the co-located light and camera moving extremely close to the surface. 
+					In addition, low texture surfaces in endoscopy videos cause photometric bundle adjustment of the existing SLAM frameworks to perform poorly compared to indoor/outdoor scenes.
+					To mitigate this problem, we introduce Near-Field Lighting Bundle Adjustment Loss (NFL-BA) % ($\mathcal{L}_{NFL-BA}$)
+					which explicitly models near-field lighting as a part of Bundle Adjustment loss and enables better performance for low texture surfaces. Our proposed NFL-BA can be applied to any neural-rendering based SLAM framework.
+					We show that by replacing traditional photometric bundle adjustment loss with our proposed NFL-BA results in improvement, using neural implicit SLAM and 3DGS SLAMs.
+					In addition to producing state-of-the-art tracking and mapping results on colonoscopy C3VD dataset we also show improvement on real colonoscopy videos.
+				</p>
 				<hr>
 
 				<div class="w3-center">
-					<h2>Visualizations</h2>
+					<h2>C3VD Visualizations</h2>
 				</div>
+
+				<p align="justify">
+					Please allow a moment for point clouds to load after changing sequences.
+				</p>
 
 				<div id="seq-container">
 					<div id="control-container" style="display: flex; flex-direction: row; justify-content: center; margin-bottom: 20px; gap: 20px;">
@@ -213,12 +224,12 @@
 						<div id="depth-box" style="display: flex; flex-direction: row; align-items: center; gap: 10px;">
 							<h5>Depth Input</h5>
 							<div style="display: grid; grid-template-areas: 
-											'no_depth no_depth'
-											'oracle ppsnet '; align-items: middle; justify-items: center;
+											'oracle oracle'
+											'ppsnet dpt'; align-items: middle; justify-items: center;
 											gap: 5px;">
-								<button class="depth-btn" data-depth="no_depth" style="grid-area: no_depth;">None</button>
 								<button class="depth-btn" data-depth="oracle_depth" style="grid-area: oracle;">Oracle</button>
-								<button class="depth-btn monoGS-only" data-depth="ppsnet_depth" style="grid-area: ppsnet;">PPSNet</button>
+								<button class="depth-btn" data-depth="ppsnet_depth" style="grid-area: ppsnet;">PPSNet</button>
+								<button class="depth-btn" data-depth="dpt_depth" style="grid-area: dpt;">DA-Hybrid</button>
 							</div>
 						</div>
 				
@@ -227,8 +238,8 @@
 							<h5>Sequence</h5>
 							<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px;">
 								<button class="sequence-btn" data-seq="cecum_t1_a">cecum_t1_a</button>
-								<button class="sequence-btn" data-seq="cecum_t3_a">cecum_t3_a</button>
-								<button class="sequence-btn" data-seq="desc_t4_a_p2">desc_t4_a</button>
+								<button class="sequence-btn" data-seq="desc_t4_a_p2">desc_t4_a_p2</button>
+								<button class="sequence-btn" data-seq="sigmoid_t3_a">sigmoid_t3_a</button>
 								<button class="sequence-btn" data-seq="trans_t2_a">trans_t2_a</button>
 							</div>
 						</div>
@@ -275,6 +286,70 @@
 					</p>
 
 				</div>
+
+				<hr>
+
+				<!-- Extra Visualization Section: Visual A -->
+				<div id="extra-sectionA" style="margin-top:40px; margin-bottom:40px; text-align:center;">
+					<h2>Colon10k: Sequence 3</h2>
+					<div id="extra-containerA" style="display:flex; justify-content:space-around; align-items:center;">
+					<!-- Left Panel: Constant Video -->
+					<div class="viewer-wrapper" style="width:32%;">
+						<h5>RGB Video</h5>
+						<div class="viewer" id="extra-video-viewerA">
+						<video id="constantVideoA" playsinline muted loop controls style="width:100%;"></video>
+						</div>
+					</div>
+					<!-- Middle Panel: Left Point Cloud -->
+					<div class="viewer-wrapper" style="width:32%;">
+						<h5>Base Point Cloud </h5>
+						<div class="viewer" id="extra-viewerA1">
+						<canvas id="extraCanvas1A" tabindex="0" style="width:100%;"></canvas>
+						</div>
+						<button id="resetExtraA1">Reset</button>
+					</div>
+					<!-- Right Panel: Right Point Cloud -->
+					<div class="viewer-wrapper" style="width:32%;">
+						<h5>Our Point Cloud</h5>
+						<div class="viewer" id="extra-viewerA2">
+						<canvas id="extraCanvas2A" tabindex="0" style="width:100%;"></canvas>
+						</div>
+						<button id="resetExtraA2">Reset</button>
+					</div>
+					</div>
+				</div>
+				
+				<!-- Extra Visualization Section: Visual B -->
+				<div id="extra-sectionB" style="margin-top:40px; margin-bottom:40px; text-align:center;">
+				<h2>Colon10k: Sequence 4</h2>
+				<div id="extra-containerB" style="display:flex; justify-content:space-around; align-items:center;">
+					<!-- Left Panel: Constant Video -->
+					<div class="viewer-wrapper" style="width:32%;">
+					<h5>RGB Video</h5>
+					<div class="viewer" id="extra-video-viewerB">
+						<video id="constantVideoB" playsinline muted loop controls style="width:100%;"></video>
+					</div>
+					</div>
+					<!-- Middle Panel: Left Point Cloud -->
+					<div class="viewer-wrapper" style="width:32%;">
+					<h5>Base Point Cloud</h5>
+					<div class="viewer" id="extra-viewerB1">
+						<canvas id="extraCanvas1B" tabindex="0" style="width:100%;"></canvas>
+					</div>
+					<button id="resetExtraB1">Reset</button>
+					</div>
+					<!-- Right Panel: Right Point Cloud -->
+					<div class="viewer-wrapper" style="width:32%;">
+					<h5>Our Point Cloud</h5>
+					<div class="viewer" id="extra-viewerB2">
+						<canvas id="extraCanvas2B" tabindex="0" style="width:100%;"></canvas>
+					</div>
+					<button id="resetExtraB2">Reset</button>
+					</div>
+				</div>
+				</div>
+
+
 
 				<hr>
 				<div class="w3-center">
