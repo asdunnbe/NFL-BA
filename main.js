@@ -54,7 +54,7 @@ function offsetPositions(positions, dx, dy, dz) {
 
 function getPaths(pipeline, depthType, sequence) {
   // All scenarios still use the same GT file as before
-  const gtPath = `point_clouds/gt/ascii-${sequence}_under_review-500.ply`;
+  const gtPath = './point_clouds/gt/ascii-${sequence}_under_review-500.ply';
 
   // Determine the pipeline folder name
   let baseDir = (pipeline === "MonoGS") ? "MonoGS" : "EndoGSLAM";
@@ -72,8 +72,8 @@ function getPaths(pipeline, depthType, sequence) {
       /* otherwise */                  "oracle";
 
   // Build point cloud paths
-  const basePath = `point_clouds/pc/${baseDir}_base_${pcDepthSuffix}_${sequence}_under_review_colored.ply`;
-  const nflbaPath = `point_clouds/pc/${baseDir}_OUR_${pcDepthSuffix}_${sequence}_under_review_colored.ply`;
+  const basePath = './point_clouds/pc/${baseDir}_base_${pcDepthSuffix}_${sequence}_under_review_colored.ply';
+  const nflbaPath = './point_clouds/pc/${baseDir}_OUR_${pcDepthSuffix}_${sequence}_under_review_colored.ply';
 
   // Build video path using the videoDepthSuffix
   const videoPath = `videos/${baseDir}/${baseDir}_${videoDepthSuffix}_${sequence}_traj_3.mp4`;
