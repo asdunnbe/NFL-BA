@@ -76,7 +76,7 @@ function getPaths(pipeline, depthType, sequence) {
   const nflbaPath = `./point_clouds/pc/${baseDir}_OUR_${pcDepthSuffix}_${sequence}_under_review_colored.ply`;
 
   // Build video path using the videoDepthSuffix
-  const videoPath = './videos/${baseDir}/${baseDir}_${videoDepthSuffix}_${sequence}_traj_3.mp4';
+  const videoPath = `./videos/${baseDir}/${baseDir}_${videoDepthSuffix}_${sequence}_traj_3.mp4`;
 
   return { gtPath, basePath, nflbaPath, videoPath };
 }
