@@ -76,7 +76,7 @@ function getPaths(pipeline, depthType, sequence) {
   const nflbaPath = `./point_clouds/pc/${baseDir}_OUR_${pcDepthSuffix}_${sequence}_under_review_colored.ply`;
 
   // Build video path using the videoDepthSuffix
-  const videoPath = `./videos/${baseDir}/${baseDir}_${videoDepthSuffix}_${sequence}_traj_3.mp4`;
+  const videoPath = `./videos-encoded/${baseDir}/${baseDir}_${videoDepthSuffix}_${sequence}_traj_3.mp4`;
 
   return { gtPath, basePath, nflbaPath, videoPath };
 }
@@ -612,7 +612,7 @@ window.addEventListener("keydown", (e) => {
 // Visual A: Video and point clouds for Visual A
 async function loadExtraSectionA() {
   // Absolute paths for Visual A
-  const videoPath = "./videos/real/color_video_03_15_skip.mp4";
+  const videoPath = "./videos-encoded/real/color_video_03_15_skip.mp4";
   const leftPointCloudPath = "./point_clouds/seq3_base.ply";
   const rightPointCloudPath = "./point_clouds/seq3_v3.ply";
   
@@ -641,7 +641,7 @@ async function loadExtraSectionA() {
 
 // Visual B: Video and point clouds for Visual B
 async function loadExtraSectionB() {
-  const videoPath = "./videos/real/color_video_04_15_skip.mp4";
+  const videoPath = "./videos-encoded/real/color_video_04_15_skip.mp4";
   const leftPointCloudPath = "./point_clouds/real_base.ply";
   const rightPointCloudPath = "./point_clouds/seq4_ours_v3.ply";
   
