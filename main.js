@@ -141,7 +141,9 @@ async function loadCombination() {
   videoElement.muted = true;
   videoElement.autoplay = true;
   videoElement.load();
-  videoElement.play();
+  videoElement.play().catch(err => {
+    console.warn("Autoplay prevented in loadCombination:", err);
+  });
 
   const [gtData, baseData, nflbaData] = await Promise.all([
     loadPointCloud(gtPath),
@@ -620,7 +622,9 @@ async function loadExtraSectionA() {
   constantVideoA.muted = true;
   constantVideoA.autoplay = true;
   constantVideoA.load();
-  constantVideoA.play();
+  constantVideoA.play().catch(err => {
+    console.warn("Autoplay prevented in loadExtraSectionA:", err);
+  });
   
   const leftData = await loadPointCloud(leftPointCloudPath);
   const rightData = await loadPointCloud(rightPointCloudPath);
@@ -647,7 +651,9 @@ async function loadExtraSectionB() {
   constantVideoB.muted = true;
   constantVideoB.autoplay = true;
   constantVideoB.load();
-  constantVideoB.play();
+  constantVideoB.play().catch(err => {
+    console.warn("Autoplay prevented in loadExtraSectionB:", err);
+  });
   
   const leftData = await loadPointCloud(leftPointCloudPath);
   const rightData = await loadPointCloud(rightPointCloudPath);
