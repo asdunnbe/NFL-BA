@@ -610,9 +610,9 @@ window.addEventListener("keydown", (e) => {
 // Visual A: Video and point clouds for Visual A
 async function loadExtraSectionA() {
   // Absolute paths for Visual A
-  const videoPath = "videos/real/color_video_03_15_skip.mp4";
-  const leftPointCloudPath = "point_clouds/seq3_base.ply";
-  const rightPointCloudPath = "point_clouds/seq3_v3.ply";
+  const videoPath = "./videos/real/color_video_03_15_skip.mp4";
+  const leftPointCloudPath = "./point_clouds/seq3_base.ply";
+  const rightPointCloudPath = "./point_clouds/seq3_v3.ply";
   
   const constantVideoA = document.getElementById('constantVideoA');
   constantVideoA.src = videoPath;
@@ -637,9 +637,9 @@ async function loadExtraSectionA() {
 
 // Visual B: Video and point clouds for Visual B
 async function loadExtraSectionB() {
-  const videoPath = "videos/real/color_video_04_15_skip.mp4";
-  const leftPointCloudPath = "point_clouds/real_base.ply";
-  const rightPointCloudPath = "point_clouds/seq4_ours_v3.ply";
+  const videoPath = "./videos/real/color_video_04_15_skip.mp4";
+  const leftPointCloudPath = "./point_clouds/real_base.ply";
+  const rightPointCloudPath = "./point_clouds/seq4_ours_v3.ply";
   
   const constantVideoB = document.getElementById('constantVideoB');
   constantVideoB.src = videoPath;
