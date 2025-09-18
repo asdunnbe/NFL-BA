@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>NFL-BA</title>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<style>
+		html, body, h1, h2, h3, h4, h5, h6 {
+			font-family: "Titillium Web", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+			margin: 0;
+			padding: 0;
+		}
+
+		.cite {
+			padding: 0px;
+			background: #ffffff;
+			font-size: 18px;
+		}
+
+		.card {
+			border: 1px solid #ccc
+		}
+
+		p {
+			font-size: 18px;
+		}
+
+		a {
+			text-decoration: none;
+			color: #2196F3;
+		}
+		
+		.bibtexsection {
+			width: 100%;
+			height: 12em;
+			font-family: "Courier", monospace;
+			white-space: pre;
+			background-color: #f4f4f4;
+			margin-left: auto;
+			margin-right: auto;
+			text-align: left;
+		}
+
+		table {
+			text-align: center;
+			margin-left: auto;
+			margin-right: auto;
+			border-collapse: collapse;
+		}
+
+		#seq-container {
+			margin-top: 40px;
+			margin-bottom: 40px;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+
+		button {
+			padding: 10px;
+			border: none;
+			cursor: pointer;
+			background: #dce8f7;
+			color: #000;
+			font-size: 14px;
+			text-align: center;
+			height: 40px;
+			width: 100px;
+		}
+
+		button.pipeline-btn{
+			width: 120px;
+		}
+
+		button.selected {
+			background: #9bc8ff; /* Lighter background for selected */
+			color: #000;
+			font-weight: bold;
+		}
+
+		#seq-header {
+			margin-bottom: 0px;
+			text-align: center;
+		}
+
+		#container {
+			width: 95%;
+			margin: 0 auto;
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-start;
+			flex-wrap: nowrap;
+		}
+
+		.viewer-wrapper {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			width: 32%;
+		}
+
+		.viewer {
+			width: 100%;
+			aspect-ratio: 1 / 1;
+			position: relative;
+			border: 1px solid #333;
+			background: #eee;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			overflow: hidden; /* ensure no scroll bars on viewer */
+		}
+
+		canvas {
+			display: block;
+			width: 100%;
+			height: 100%;
+		}
+
+		select {
+			font-size: 1rem;
+			padding: 5px;
+		}
+
+		#video-container {
+			width: 95%;             /*  MUST MATCH container  */
+			margin: 10px auto;
+			text-align: center;
+		}
+
+		#sequenceVideo {
+			width: 100%;
+			height: auto;
+		}
+
+		#custom-table {
+			display: table;
+			width: 100%; /* Adjust as needed */
+			border-collapse: collapse;
+			border-spacing: 0;
+		}
+
+		.table-row {
+			display: table-row;
+		}
+
+		.table-cell {
+			display: table-cell;
+			text-align: center; /* Center text horizontally */
+			vertical-align: middle; /* Center text vertically */
+			border: 1px solid white; /* White border lines */
+			padding: 0px; /* Optional: adjust padding for spacing */
+			background-color: transparent; /* No fill */
+			color: black; /* Adjust text color if needed */
+			width: 33.33%; /* Ensures all cells are of equal width */
+		}
+	</style>
+</head>
+
+<body class="w3-white">
+	<!-- Page Container -->
+	<div class="w3-content w3-margin-top w3-margin-bottom" style="max-width:960px;">
+		<div class="w3-row-padding">
+			<div class="w3-display-container w3-row w3-white w3-margin-bottom">
+				<div class="w3-center">
+					<br>
+					<h1>NFL-BA: Near-Field Light Bundle Adjustment for</h1>
+					<h1>SLAM in Dynamic Lighting</h1>
+					<h5>
+						<a href="https://github.com/asdunnbe/" target="_blank">Andrea Dunn Beltran</a><sup>*</sup>, 
+						<a href="https://daniel03c1.github.io/" target="_blank">Daniel Rho</a><sup>*</sup>, 
+						<a href="https://biag.cs.unc.edu/" target="_blank">Marc Niethammer</a>, 
+						<a href="https://www.cs.unc.edu/~ronisen/" target="_blank">Roni Sengupta</a>
+					</h5>
+					<h5>University of North Carolina at Chapel Hill</h5>
+					<h5><sup>*</sup>Equal contribution</h5>
+				</div>
+
+				<div class="w3-center">
+					<h4>[<a href="https://arxiv.org/abs/2412.13176">Paper</a>]</h4>
+				</div>
+
+				<div class="w3-center">
+					<h3>NeurIPS 2025</h3>
+				</div>
+
+				<hr>
+				<div class="w3-display-container w3-row w3-white w3-margin-bottom w3-center">
+					<img src="images/teaser.png" style="width:100%">
+				</div>
+				
+				<hr>
+				<div class="w3-center">
+					<h2>Abstract</h2>
+				</div>
+				
+				<p align="justify">
+					Simultaneous Localization and Mapping (SLAM) systems typically assume static, distant illumination; however, many real-world scenarios, such as endoscopy, subterranean robotics, and search & rescue in collapsed environments, require agents to operate with a co-located light and camera in the absence of external lighting. 
+					In such cases, dynamic near-field lighting introduces strong, view-dependent shading that significantly degrades SLAM performance. 
+					We introduce Near-Field Lighting Bundle Adjustment Loss (NFL-BA) which explicitly models near-field lighting as a part of Bundle Adjustment loss and enables better performance for scenes captured with dynamic lighting. 
+					NFL-BA can be integrated into neural rendering-based SLAM systems with implicit or explicit scene representations. 
+					Our evaluations mainly focus on endoscopy procedure where SLAM can enable autonomous navigation, guidance to unsurveyed regions, blindspot detections, and 3D visualizations, which can significantly improve patient outcomes and endoscopy experience for both physicians and patients. 
+					Replacing Photometric Bundle Adjustment loss of SLAM systems with NFL-BA leads to significant improvement in camera tracking, 37% for MonoGS and 14% for EndoGS, and leads to state-of-the-art camera tracking and mapping performance on the C3VD colonoscopy dataset. 
+					Further evaluation on indoor scenes captured with phone camera with flashlight turned on, also demonstrate significant improvement in SLAM performance due to NFL-BA.
+				</p>
+				<hr>
+
+				<div class="w3-center">
+					<h2>C3VD Visualizations</h2>
+				</div>
+
+				<p align="justify">
+					Please allow a moment for point clouds to load after changing sequences.
+				</p>
+
+				<div id="seq-container">
+					<div id="control-container" style="display: flex; flex-direction: row; justify-content: center; margin-bottom: 20px; gap: 20px;">
+						<!-- Pipeline Selection -->
+						<div id="pipeline-box" style="display: flex; flex-direction: row; align-items: center; gap: 10px;">
+							<h5>SLAM</h5>
+							<div style="display: flex; flex-direction: column; gap: 5px;">
+								<button class="pipeline-btn" data-pipeline="MonoGS">MonoGS</button>
+								<button class="pipeline-btn" data-pipeline="EndoGSLAM">EndoGSLAM</button>
+							</div>
+						</div>
+				
+						<!-- Depth Input Selection -->
+						<div id="depth-box" style="display: flex; flex-direction: row; align-items: center; gap: 10px;">
+							<h5>Depth Input</h5>
+							<div style="display: grid; grid-template-areas: 
+											'oracle oracle'
+											'ppsnet dpt'; align-items: middle; justify-items: center;
+											gap: 5px;">
+								<button class="depth-btn" data-depth="oracle_depth" style="grid-area: oracle;">Oracle</button>
+								<button class="depth-btn" data-depth="ppsnet_depth" style="grid-area: ppsnet;">PPSNet</button>
+								<button class="depth-btn" data-depth="dpt_depth" style="grid-area: dpt;">DA-Hybrid</button>
+							</div>
+						</div>
+				
+						<!-- Sequence Selection -->
+						<div id="sequence-box" style="display: flex; flex-direction: row; align-items: center; gap: 10px;">
+							<h5>Sequence</h5>
+							<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px;">
+								<button class="sequence-btn" data-seq="cecum_t1_a">cecum_t1_a</button>
+								<button class="sequence-btn" data-seq="desc_t4_a_p2">desc_t4_a_p2</button>
+								<button class="sequence-btn" data-seq="sigmoid_t3_a">sigmoid_t3_a</button>
+								<button class="sequence-btn" data-seq="trans_t2_a">trans_t2_a</button>
+							</div>
+						</div>
+					</div>
+
+					<div id="video-container">
+						<div id="custom-table">
+							<div class="table-row">
+								<div class="table-cell"><h5>Input Video</div>
+								<div class="table-cell"><h5>SLAM Baseline <b>Trajectory</b></h5></div>
+								<div class="table-cell"><h5>+NFL_BA (Ours)</h5></div>
+							</div>
+						</div>
+						<video id="sequenceVideo" playsinline muted loop controls></video>
+
+					</div>
+
+					<div id="container">
+						<div class="viewer-wrapper">
+							<h5>GT Point Cloud</h5>
+							<div class="viewer" id="viewer1">
+								<canvas id="canvas1"></canvas>
+							</div>
+						</div>
+						<div class="viewer-wrapper">
+							<h5>SLAM Baseline <b>Mapping</b></h5>
+							<div class="viewer" id="viewer2">
+								<canvas id="canvas2"></canvas>
+							</div>
+						</div>
+						<div class="viewer-wrapper">
+							<h5>+NFL_BA (Ours)</h5>
+							<div class="viewer" id="viewer3">
+								<canvas id="canvas3"></canvas>
+							</div>
+						</div>
+					</div>
+
+					<p style="font-size:14px; margin-top:10px;">
+						<b>Controls:</b> Click and drag inside the viewer to rotate. Use mouse wheel to zoom.  
+						Keyboard arrows ( ↑ ↓ ← → ) to move, <b>'a'/'d'</b> to yaw, <b>'w'/'s'</b> to pitch, <b>'q'/'e'</b> to roll. Click
+						<span id="reset-view" style="color: blue; text-decoration: underline; cursor: pointer;">here</span> to reset view to default.
+
+					</p>
+
+				</div>
+
+				<hr>
+
+
+				<div class="w3-center">
+					<h1>C3VD Results</h1>
+				</div>
+				<img src="images/table.png" style="width:100%">
+				<hr>
+
+
+				<div class="w3-center">
+					<h2>Colon10k Visualizations</h2>
+				</div>
+
+				<!-- Extra Visualization Section: Visual A -->
+				<div id="extra-sectionA" style="margin-top:40px; margin-bottom:40px; text-align:center;">
+					<h3>Sequence 3</h3>
+					<div style="height:10px;"></div>
+					<div id="extra-containerA" style="display:flex; justify-content:space-around;">
+						<!-- Left Panel: Constant Video -->
+						<div class="viewer-wrapper" style="width:32%;">
+							<h5>RGB Video</h5>
+							<div class="viewer" id="extra-video-viewerA">
+								<video id="constantVideoA" playsinline muted loop controls style="width:100%;"></video>
+							</div>
+						</div>
+						<!-- Middle Panel: Left Point Cloud -->
+						<div class="viewer-wrapper" style="width:32%;">
+							<h5>Base Point Cloud</h5>
+							<div class="viewer" id="extra-viewerA1">
+								<canvas id="extraCanvas1A" tabindex="0" style="width:100%;"></canvas>
+							</div>
+							<div style="height:10px;"> </div>
+							<button id="resetExtraA1">Reset</button>
+						</div>
+						<!-- Right Panel: Right Point Cloud -->
+						<div class="viewer-wrapper" style="width:32%;">
+							<h5>Our Point Cloud</h5>
+							<div class="viewer" id="extra-viewerB2">
+								<canvas id="extraCanvas2A" tabindex="0" style="width:100%;"></canvas>
+							</div>
+							<div style="height:10px;"></div>
+							<button id="resetExtraA2">Reset</button>
+						</div>
+
+					</div>
+				</div>
+				
+				<!-- Extra Visualization Section: Visual B -->
+				<div id="extra-sectionB" style="margin-top:40px; margin-bottom:40px; text-align:center;">
+					<h3>Sequence 4</h3>
+					<div style="height:10px;"></div>
+					<div id="extra-containerB" style="display:flex; justify-content:space-around;">
+						<!-- Left Panel: Constant Video -->
+						<div class="viewer-wrapper" style="width:32%;">
+							<h5>RGB Video</h5>
+							<div class="viewer" id="extra-video-viewerB">
+								<video id="constantVideoB" playsinline muted loop controls style="width:100%;"></video>
+							</div>
+						</div>
+						<!-- Middle Panel: Left Point Cloud -->
+						<div class="viewer-wrapper" style="width:32%;">
+							<h5>Base Point Cloud</h5>
+							<div class="viewer" id="extra-viewerB1">
+								<canvas id="extraCanvas1B" tabindex="0" style="width:100%;"></canvas>
+							</div>
+							<div style="height:10px;"> </div>
+							<button id="resetExtraB1">Reset</button>
+						</div>
+						<!-- Right Panel: Right Point Cloud -->
+						<div class="viewer-wrapper" style="width:32%;">
+							<h5>Our Point Cloud</h5>
+							<div class="viewer" id="extra-viewerB2">
+								<canvas id="extraCanvas2B" tabindex="0" style="width:100%;"></canvas>
+							</div>
+							<div style="height:10px;"></div>
+							<button id="resetExtraB2">Reset</button>
+						</div>
+
+					</div>
+				</div>
+
+				<hr>
+
+
+				
+				<div class="w3-center">
+					<h2>In-Door Self Capture Visualizations</h2>
+				</div>
+				
+				<div style="height: 30px;"></div> 
+
+				<div id="indoor-sequence-box"
+					style="display:flex; flex-direction: row; justify-content: center; align-items: center; gap: 10px; margin-bottom:20px;">
+				<h5>Indoor Scene</h5>
+				<div style="display: grid;
+							grid-template-columns: repeat(3, 1fr);
+							gap: 20px;
+							align-items: center;
+							justify-items: center;" >
+					<button class="indoor-seq-btn" data-indoor-seq="guitar">Guitars</button>
+					<button class="indoor-seq-btn selected" data-indoor-seq="outdoor">Porch</button>
+				</div>
+				</div>
+
+				<div id="video-container">
+
+					<div id="custom-table">
+						<div class="table-row">
+							<div class="table-cell"><h5>Input Video</div>
+							<div class="table-cell"><h5>Photo-BA <b>Trajectory</b></h5></div>
+							<div class="table-cell"><h5>NFL-BA</h5></div>
+						</div>
+					</div>
+
+					<video id="wildVideo"
+							playsinline
+							muted
+							autoplay
+							loop
+							controls
+							style="width:100%; height:auto; display:block;">
+						<source src="./videos/wild/WILD_phone_outdoor_sidebyside.mp4" type="video/mp4">
+						Your browser does not support HTML5 video.
+					</video>
+				</div>
+
+
+				<div style="height: 30px;"></div> 
+				<hr>
+				<div style="height: 30px;"></div> 
+
+				<div class="w3-center">
+					<h3>Acknowledgment</h3>
+				</div>
+				
+				<p align="justify">
+					This work is supported by a National Institute of Health (NIH) project #1R21EB035832 "Next-gen 3D Modeling of Endoscopy Videos".
+					We also thank <a href="https://www.cs.unc.edu/~smp/" target="_blank">Stephen M. Pizer</a> and Dr. Sarah McGill for helpful discussions during the project.
+				</p>
+
+				<hr>
+
+				<div class="w3-center">
+					<h2>Bibtex</h2>
+				</div>
+				<textarea class="bibtexsection" readonly>
+@inproceedings{NFL-BA,
+  title={NFL-BA: Near-Field Light Bundle Adjustment for SLAM in Dynamic Lighting},
+  author={Dunn Beltran, Andrea and Rho, Daniel and Niethammer, Marc and Sengupta, Roni},
+  journal={arXiv preprint arXiv:2412.13176},
+  year={2024}
+}
+				</textarea>
+
+				<hr>
+				<div class="w3-center">
+					<p class="text-justify">
+						We used the project page of <a href="https://leonidk.github.io/fuzzy-metaballs/">Fuzzy Metaballs</a> as a template.
+					</p>
+				</div>
+			</div>
+			<!-- end paper container -->
+		</div><!-- End Grid -->
+	</div><!-- End Page Container -->
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" id="MathJax-script" async></script>
+<link
+	rel="stylesheet"
+	href="https://unpkg.com/img-comparison-slider@7/dist/styles.css"
+/>
+<script type="module" src="main.js"></script>
+</body>
+</html>
