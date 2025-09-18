@@ -14,7 +14,7 @@ let mouseInCanvas1 = false, mouseInCanvas2 = false, mouseInCanvas3 = false;
 let isDragging = false, lastMouseX = 0, lastMouseY = 0;
 
 // Global state for main section controls
-let pipeline = "MonoGS", depthType = "dpt_depth", sequence = "trans_t2_a";
+let pipeline = "MonoGS", depthType = "ppsnet_depth", sequence = "trans_t2_a";
 
 // === Global Variables for Extra Sections ===
 // Each extra viewer gets its own independent camera state.
@@ -327,7 +327,7 @@ function setupViewer(gl, positions, colors) {
     uniform mat4 uPMatrix;
     varying vec3 vColor;
     void main(void) {
-      gl_PointSize = 2.0;
+      gl_PointSize = 4.0;
       gl_Position = uPMatrix * uMVMatrix * vec4(aPosition, 1.0);
       vColor = aColor;
     }`;
