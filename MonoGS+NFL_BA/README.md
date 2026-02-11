@@ -2,7 +2,9 @@
 
 This repository contains the reference implementation of **NFL-BA** (Near-Field Light Bundle Adjustment). 
 
-NFL-BA is implemented as a **plug-and-play** photometric optimization module, and in this repo we demonstrate it on top of the **MonoGS** SLAM / reconstruction backbone. The goal is to make it easy to reproduce our results by minimally modifying the original MonoGS codebase.
+NFL-BA is implemented as a **plug-and-play** photometric optimization module, and in this repo we demonstrate it on top of the **MonoGS** SLAM / reconstruction backbone. 
+
+The idea from this paper (correcting the image formulation model and bundle adjustment) works on multiple different backbones
 
 ## Overview
 
@@ -17,7 +19,7 @@ NFL-BA is implemented as a **plug-and-play** photometric optimization module, an
     - Modifications to incorporate the near-field photometric residuals into the optimization.
 - **Other changes**:
   - Minor changes to the CUDA rasterizer.
-  - Minor adjustments in configuration files and experiment scripts to enable/disable NFL-BA and to reproduce the experiments in the paper.
+  - Minor adjustments in configuration files and experiment scripts to enable NFL-BA.
 
 ## Environment Setup
 
