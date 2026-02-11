@@ -80,11 +80,13 @@ Again, you should adapt:
 If you find this code useful in your research, please cite:
 
 ```bibtex
-@inproceedings{NFL-BA,
-  title={NFL-BA: Near-Field Light Bundle Adjustment for SLAM in Dynamic Lighting},
-  author={Dunn Beltran, Andrea and Rho, Daniel and Niethammer, Marc and Sengupta, Roni},
-  journal={arXiv preprint arXiv:2412.13176},
-  year={2024}
+@inproceedings{
+    beltran2025nflba,
+    title={{NFL}-{BA}: Near-Field Light Bundle Adjustment for {SLAM} in Dynamic Lighting},
+    author={Andrea Dunn Beltran and Daniel Rho and Marc Niethammer and Roni Sengupta},
+    booktitle={The Thirty-ninth Annual Conference on Neural Information Processing Systems},
+    year={2025},
+    url={https://openreview.net/forum?id=AmZ7uHDJiR}
 }
 ```
 
