@@ -179,7 +179,7 @@ def render(
         #                 + (cos ** F.softplus(params['shininess']+1)) * w[..., 1:])
         shading = La * cos
         # print('shading', shading.min(), shading.max())
-        shading = torch.pow(shading, 1/2.2)
+        shading = torch.pow(shading.clamp(min=1e-8), 1/2.2)
     else:
         shading = torch.ones_like(means3D[..., 0:1], device=means3D.device)
 
