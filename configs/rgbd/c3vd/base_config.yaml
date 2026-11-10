@@ -40,7 +40,7 @@ Dataset:
 Training:
   pps: False
   pps_map: False
-  beta: 0.01
+  beta: 0.5
   beta_map: 0.01
   mesh: False
   alpha: 0.8 # NOTE: originally 0.9
