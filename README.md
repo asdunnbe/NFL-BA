@@ -18,7 +18,6 @@ The idea from this paper (correcting the image formulation model and bundle adju
   - **Loss functions**:
     - Modifications to incorporate the near-field photometric residuals into the optimization.
 - **Other changes**:
-  - Minor changes to the CUDA rasterizer.
   - Minor adjustments in configuration files and experiment scripts to enable NFL-BA.
 
 ## Environment Setup
