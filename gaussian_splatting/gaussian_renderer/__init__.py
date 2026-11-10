@@ -20,6 +20,7 @@ from diff_gaussian_rasterization import (
 import torch.nn.functional as func
 from gaussian_splatting.scene.gaussian_model import GaussianModel
 from gaussian_splatting.utils.sh_utils import eval_sh
+from utils.pose_utils import SE3_exp
 
 def get_normals(positions, scaling, rotations, camera_center=None):
     """
@@ -138,7 +139,7 @@ def render(
     shs = None
     colors_precomp = None
     if colors_precomp is None:
-        if pipe.convert_SHs_python:
+        if pipe.convert_SHs_python or pipe.nfl:
             shs_view = pc.get_features.transpose(1, 2).view(
                 -1, 3, (pc.max_sh_degree + 1) ** 2
             )
@@ -153,13 +154,24 @@ def render(
     else:
         colors_precomp = override_color
 
-    normals = get_normals(means3D, scales, rotations)
-
     if pipe.nfl:
-        print("Render NFL")
+        # light is co-located with the current camera
+        w2c = torch.eye(4, device=means3D.device)
+        w2c[:3, :3] = viewpoint_camera.R
+        w2c[:3, 3] = viewpoint_camera.T
+        if viewpoint_camera.cam_rot_delta is not None:
+            tau = torch.cat([viewpoint_camera.cam_trans_delta,
+                             viewpoint_camera.cam_rot_delta], axis=0)
+            w2c = SE3_exp(tau) @ w2c
+        cam_center = -w2c[:3, :3].T @ w2c[:3, 3]
+        normals = get_normals(means3D, scales, rotations,
+                              camera_center=cam_center.detach())
+        pts = means3D @ w2c[:3, :3].T + w2c[:3, 3]
+        normals = normals @ w2c[:3, :3].T
+
         attenuation = 0.0  # 0.5 then 1.0 then 0.25 then 0.75
-        distance2 = means3D.square().sum(dim=-1, keepdim=True).clamp(min=1e-4)
-        Ld = - means3D / distance2.sqrt()
+        distance2 = pts.square().sum(dim=-1, keepdim=True).clamp(min=1e-4)
+        Ld = - pts / distance2.sqrt()
         La = (Ld[..., 2:3] ** attenuation) / distance2
         cos = (Ld * normals).sum(dim=-1, keepdim=True).clamp(-1, 1)
         # w = F.softplus(params['specularity'])
@@ -171,14 +183,13 @@ def render(
     else:
         shading = torch.ones_like(means3D[..., 0:1], device=means3D.device)
 
-    if colors_precomp is not None: print("Rendering with colors_precomp")
     # Rasterize visible Gaussians to image, obtain their radii (on screen).
     if mask is not None:
         rendered_image, radii, depth, opacity = rasterizer(
             means3D=means3D[mask],
             means2D=means2D[mask],
             shs=shs[mask],
-            colors_precomp=colors_precomp[mask]* shading[mask] if colors_precomp is not None else None,
+            colors_precomp=colors_precomp[mask] * shading[mask] if colors_precomp is not None else None,
             # colors_precomp=colors_precomp[mask] if colors_precomp is not None else None,
             opacities=opacity[mask],
             scales=scales[mask],
