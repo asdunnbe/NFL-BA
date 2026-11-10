@@ -41,9 +41,10 @@ Below are example commands for reproducing experiments on C3VD and on self-captu
 
 ```bash
 python slam.py \
-    --config configs/mono/c3vd/base_config.yaml \
+    --config configs/rgbd/c3vd/base_config.yaml \
     --experiment c3vd \
     --depth c3vd \
+    --nfl \
     --scene /path/to/C3VD/cecum_t1_a_under_review
 ```
 
@@ -52,7 +53,8 @@ Key arguments:
 - `--config`: Base configuration file for MonoGS + NFL-BA on C3VD.
 - `--experiment`: Experiment tag (`c3vd` in our setup).
 - `--depth`: Depth mode (`c3vd` uses the dataset depth maps, while `pps` uses depth predicted by PPSNet).
-- `--scene`: Path to the specific C3VD sequence.
+- `--nfl`: Enable NFL-BA.
+- `--scene`: Path to the specific C3VD sequence. The parent folder must be named `C3VD`.
 
 ---
 
